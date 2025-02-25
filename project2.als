@@ -1,7 +1,14 @@
 abstract sig Vehicle {}
-var sig Cargo_V in Vehicle {}
-var sig Passenger_V in Vehicle {}
-var sig Pickup extends Vehicle {}
+var sig Cargo_V in Vehicle {
+    cargo: set Materials
+}
+var sig Passenger_V in Vehicle {
+    passengers: set People
+}
+var sig Pickup_V extends Vehicle {
+    P_cargo: set Materials,
+    P_passengers: set People
+}
 var sig People {}
 var sig Materials {}
 abstract sig Locations {}
