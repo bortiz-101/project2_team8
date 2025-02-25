@@ -11,3 +11,5 @@ var sig Warehouses extends Locations{}
 fact init {
     
 }
+
+run project2 {} for 5
