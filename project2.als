@@ -1,9 +1,11 @@
 abstract sig Vehicle {}
 var sig Cargo_V in Vehicle {
-    cargo: set Materials
+    cargo: set Materials,
+    max_capacity: lone Int
 }
 var sig Passenger_V in Vehicle {
-    passengers: set People
+    passengers: set People,
+    max_passengers: lone Int
 }
 var sig Pickup_V extends Vehicle {
     P_cargo: set Materials,
