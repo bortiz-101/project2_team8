@@ -1,32 +1,32 @@
 abstract sig Vehicle {}
-var sig Cargo_V in Vehicle {
+sig Cargo_V in Vehicle {
     cargo: set Materials,
     max_capacity: lone Int
 }
-var sig Passenger_V in Vehicle {
+sig Passenger_V in Vehicle {
     passengers: set People,
     max_passengers: lone Int
 }
-var sig Pickup_V extends Vehicle {
+sig Pickup_V extends Vehicle {
     P_cargo: set Materials,
     P_passengers: set People
 }
-var sig People {}
-var sig Materials {}
+sig People {}
+sig Materials {}
 abstract sig Locations {}
-var sig Dwellings extends Locations{
+sig Dwellings extends Locations{
     tenants: set People,
     max_tenants: lone Int
 }
-var sig Workplaces extends Locations{
-    employees: set People,
+sig Workplaces extends Locations{
+    employees_needed: set People,
     materials_needed: set Materials,
     max_capacity: lone Int
 }
-var sig Warehouses extends Locations{
-    materials: set Materials,
+sig Warehouses extends Locations{
+    material_needed: set Materials,
     max_capacity: lone Int,
-    employees: set People,
+    employees_needed: set People,
     max_employees: lone Int
 }
 
@@ -52,11 +52,18 @@ fact dwelling_needs {
 }
 
 fact factory_needs {
+    // Each factory needs 5 employees
+    all f: Workplaces | f.employees_needed = 5
+    // Each factory needs 1000 lbs of material
+    all f: Workplaces | f.materials_needed = 1000
 
 }
 
 fact warehouse_needs {
-
+    // Each warehouse needs 5 employees
+    all w: Warehouses | w.employees_needed = 5
+    // Each warehouse needs 1000 lbs of material
+    all w: Warehouses | w.material_needed = 1000
 }
 
 run project2 {} for 5
