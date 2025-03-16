@@ -1,11 +1,11 @@
 abstract sig Vehicle {}
 sig Cargo_V in Vehicle {
     cargo: set Materials,
-    max_capacity: lone Int
+    max_capacity: one Int
 }
 sig Passenger_V in Vehicle {
     passengers: set People,
-    max_passengers: lone Int
+    max_passengers: one Int
 }
 sig Pickup_V extends Vehicle {
     P_cargo: set Materials,
@@ -16,18 +16,15 @@ sig Materials {}
 abstract sig Locations {}
 sig Dwellings extends Locations{
     tenants: set People,
-    max_tenants: lone Int
+    max_tenants: one Int
 }
 sig Workplaces extends Locations{
-    employees_needed: set People,
-    materials_needed: set Materials,
-    max_capacity: lone Int
+    employees_needed: one Int,
+    materials_needed: one Int
 }
 sig Warehouses extends Locations{
-    material_needed: set Materials,
-    max_capacity: lone Int,
-    employees_needed: set People,
-    max_employees: lone Int
+    material_needed: one Int,
+    employees_needed: one Int,
 }
 
 fact init {
@@ -36,19 +33,12 @@ fact init {
     no Pickup_V    
 }
 
-fact max_capacity {
-    // Sets max capacity to 6500 lbs
-    all v: Cargo_V | v.max_capacity = 6500
-}
-
-fact max_passengers {
-    // Sets max passengers to 16
-    all v: Passenger_V | v.max_passengers = 16
-}
-
-fact dwelling_needs {
-    // Each dwelling has maximum number People
-    all d: Dwellings | d.max_tenants = 6
+fact capacities {
+    all c: CargoVehicle | c.max_capacity = 6500
+    all p: PassengerVehicle | p.max_passengers = 16
+    all d: Dwelling | d.max_tenants = 6
+    all w: Workplace | w.employees_needed = 5 and w.materials_needed = 1000
+    all wh: Warehouse | wh.employees_needed = 5
 }
 
 fact workplace_needs {
@@ -181,4 +171,7 @@ pred unload_pickup_dwellings [v: Pickup_V, p: People, d: Dwellings] {
     p in d.tenants
 }
 
+fact trans {
+    always (empty_cargo or empty_passenger or empty_pickup or some v: Vehicle | v in Vehicle)
+}
 run project2 {} for 5
