@@ -10,7 +10,12 @@ sig Passenger_V in Vehicle {
     max_passengers: one Int
 }
 
-// sig Pickup_V extends Vehicle {}
+sig Pickup_V extends Vehicle {
+    P_passengers: set People,
+    P_max_passengers: one Int,
+    P_cargo: set Materials,
+    P_max_capacity: one Int
+}
 
 sig Job extends Workplaces {
     workers: set People,
@@ -46,31 +51,32 @@ fact constraints {
 
     all v: Cargo_V | #v.cargo <= v.max_capacity
 
-    // all v: Pickup_V |
-    //     #v.passengers <= v.max_passengers and
-    //     #v.cargo <= v.max_capacity
-    
+    all v: Pickup_V |
+        #v.P_passengers <= v.P_max_passengers and
+        #v.P_cargo <= v.P_max_capacity
 
     all d: Dwellings | #d.tenants <= d.max_tenants
 }
 
+// The max capacities need work, whenever I re-enable my max capacities Alloy
+// will not create vehicle instances
 
-fact max {
+// fact max {
 
-    all v: Passenger_V | v.max_passengers >= 1 and v.max_passengers <= 16
+//     all v: Passenger_V | v.max_passengers >= 1 and v.max_passengers <= 16
 
-    all v: Cargo_V | v.max_capacity >= 1 and v.max_capacity <= 6500
+//     all v: Cargo_V | v.max_capacity >= 1 and v.max_capacity <= 6500
 
-    // all v: Pickup_V |
-    //     v.max_passengers >= 1 and v.max_passengers <= 5 and
-    //     v.max_capacity >= 1 and v.max_capacity <= 6500
+//     all v: Pickup_V |
+//         v.max_passengers >= 1 and v.max_passengers <= 5 and
+//         v.max_capacity >= 1 and v.max_capacity <= 6500
 
-    all d: Dwellings | d.max_tenants >= 1 and d.max_tenants <= 30
+//     all d: Dwellings | d.max_tenants >= 1 and d.max_tenants <= 30
 
-    all w: Workplaces |
-        w.employees_needed_wp >= 1 and w.employees_needed_wp <= 30 and
-        w.materials_needed_wp >= 1 and w.materials_needed_wp <= 6500
-}
+//     all w: Workplaces |
+//         w.employees_needed_wp >= 1 and w.employees_needed_wp <= 30 and
+//         w.materials_needed_wp >= 1 and w.materials_needed_wp <= 6500
+// }
 
 
 pred finish [j: Job, w: Workplaces] {
@@ -88,7 +94,22 @@ pred cargoV_move[j: Job,c: Cargo_V, w:Workplaces, m: Materials] {
     c.cargo' = c.cargo - m
 }
 
+pred pickupV_move_cargo[j: Job,c: Pickup_V, w:Workplaces, m: Materials] {
+    m in c.cargo
+    #j.resources < w.materials_needed_wp
+    j.resources' = j.resources + m
+    c.cargo' = c.cargo - m
+}
+
+
 pred passengerV_move[j: Job, v: Passenger_V, w: Workplaces, p: People] {
+    p in v.passengers
+    #j.workers < w.employees_needed_wp
+    j.workers' = j.workers + p
+    v.passengers' = v.passengers - p
+}
+
+pred pickupV_move_passenger[j: Job, v: Pickup_V, w: Workplaces, p: People] {
     p in v.passengers
     #j.workers < w.employees_needed_wp
     j.workers' = j.workers + p
